@@ -1,15 +1,18 @@
-use ed25519_keygen::{Entropy, sha256, to_hex};
+use ed25519_keygen::{Entropy, append_checksum, extract_11bit_chunks, indices_to_mnemonic, sha256, to_hex};
 
 fn main() {
-
-    let entropy = Entropy::generate(32);
+    let mut entropy = Entropy::generate(16);
     println!("Generated entropy: {:?}", entropy.bytes);
     println!("Entropy in hex: {}", entropy.display_hex());
 
-    let hash = sha256(entropy.bytes.as_slice());
-    let result = to_hex(&hash);
+    append_checksum(&mut entropy.bytes);
 
-    println!("Computed SHA-256 hash of the entropy. {:?}", hash);
+    println!("Entropy with checksum: {:?}", entropy.bytes);
+    println!("Entropy with checksum in hex: {}", to_hex(&entropy.bytes));
 
-    println!("SHA-256 hash of entropy: {}", result);
+    let indices = extract_11bit_chunks(&entropy.bytes);
+    println!("Extracted 11-bit chunks: {:?}", indices);
+
+    let mnemonic = indices_to_mnemonic(&indices);
+    println!("Generated mnemonic: {}", mnemonic);
 }
