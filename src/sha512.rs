@@ -240,34 +240,3 @@ pub fn sha512(data: &[u8]) -> [u8; 64] {
     hasher.update(data);
     hasher.finalize()
 }
-
-pub fn hmac_sha512(key: &[u8], message: &[u8]) -> [u8; 64] {
-    let block_size = 128;
-
-    // Step 1: Prepare the key — always block_size bytes
-    let k: Vec<u8> = if key.len() > block_size {
-        // Hash the key, then zero-pad to block_size
-        let hashed = sha512(key);
-        let mut padded = vec![0u8; block_size];
-        padded[..64].copy_from_slice(&hashed);
-        padded
-    } else {
-        // Zero-pad to block_size
-        let mut padded = vec![0u8; block_size];
-        padded[..key.len()].copy_from_slice(key);
-        padded
-    };
-
-    // Step 2: Create inner and outer padded keys
-    let mut i_key_pad = vec![0x36u8; block_size];
-    let mut o_key_pad = vec![0x5cu8; block_size];
-
-    for i in 0..block_size {
-        i_key_pad[i] ^= k[i];
-        o_key_pad[i] ^= k[i];
-    }
-
-    // Step 3: HMAC = H(o_key_pad || H(i_key_pad || message))
-    let inner_hash = sha512(&[i_key_pad.as_slice(), message].concat());
-    sha512(&[o_key_pad.as_slice(), &inner_hash].concat())
-}

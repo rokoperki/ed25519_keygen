@@ -1,4 +1,7 @@
-use ed25519_keygen::{Entropy, append_checksum, extract_11bit_chunks, hmac_sha512, indices_to_mnemonic, to_hex};
+use ed25519_keygen::{
+    append_checksum, extract_11bit_chunks, hmac_sha512, indices_to_mnemonic, pbkdf2_hmac_sha512,
+    to_hex, Entropy,
+};
 
 fn main() {
     let mut entropy = Entropy::generate(16);
@@ -16,6 +19,6 @@ fn main() {
     let mnemonic = indices_to_mnemonic(&indices);
     println!("Generated mnemonic: {}", mnemonic);
 
-    let hmac_test = hmac_sha512("key".as_bytes(), "The quick brown fox jumps over the lazy dog".as_bytes());
-    println!("HMAC-SHA512: {}", to_hex(&hmac_test));
+    let pbkdf2_key = pbkdf2_hmac_sha512(mnemonic.as_bytes(), "mnemonic".as_bytes(), 2048, 64);
+    println!("Derived key (hex): {}", to_hex(&pbkdf2_key));
 }
