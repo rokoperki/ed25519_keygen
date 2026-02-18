@@ -33,6 +33,14 @@ pub fn extract_11bit_chunks(data: &[u8]) -> Vec<u16> {
     chunks
 }
 
+pub fn indices_to_mnemonic(indices: &[u16]) -> String {
+    indices
+        .iter()
+        .map(|&i| WORDLIST[i as usize])
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 const WORDLIST: [&str; 2048] = [
     "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd",
     "abuse", "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire",
@@ -246,11 +254,3 @@ const WORDLIST: [&str; 2048] = [
     "write", "wrong", "yard", "year", "yellow", "you", "young", "youth", "zebra", "zero", "zone",
     "zoo",
 ];
-
-pub fn indices_to_mnemonic(indices: &[u16]) -> String {
-    indices
-        .iter()
-        .map(|&i| WORDLIST[i as usize])
-        .collect::<Vec<_>>()
-        .join(" ")
-}
