@@ -165,10 +165,10 @@ impl Sha256 {
     pub fn update(&mut self, data: &[u8]) {
         self.total_len += data.len() as u64;
         let mut offset = 0;
-        
+
         if self.buffer_len > 0 {
             let needed = 64 - self.buffer_len;
-            
+
             if data.len() >= needed {
                 self.buffer[self.buffer_len..64].copy_from_slice(&data[..needed]);
                 self.process_block(&self.buffer.clone());
@@ -181,12 +181,12 @@ impl Sha256 {
                 return;
             }
         }
-        
+
         while offset + 64 <= data.len() {
             self.process_block(&data[offset..offset + 64]);
             offset += 64;
         }
-        
+
         if offset < data.len() {
             let remaining = data.len() - offset;
             self.buffer[..remaining].copy_from_slice(&data[offset..]);
@@ -198,10 +198,10 @@ impl Sha256 {
 impl Sha256 {
     pub fn finalize(mut self) -> [u8; 32] {
         let bit_len = self.total_len * 8;
-        
+
         self.buffer[self.buffer_len] = 0x80;
         self.buffer_len += 1;
-        
+
         if self.buffer_len > 56 {
             for i in self.buffer_len..64 {
                 self.buffer[i] = 0;
@@ -209,20 +209,20 @@ impl Sha256 {
             self.process_block(&self.buffer.clone());
             self.buffer_len = 0;
         }
-        
+
         for i in self.buffer_len..56 {
             self.buffer[i] = 0;
         }
-        
+
         self.buffer[56..64].copy_from_slice(&bit_len.to_be_bytes());
-        
+
         self.process_block(&self.buffer.clone());
-        
+
         let mut result = [0u8; 32];
         for (i, word) in self.state.iter().enumerate() {
             result[i * 4..(i + 1) * 4].copy_from_slice(&word.to_be_bytes());
         }
-        
+
         result
     }
 }
