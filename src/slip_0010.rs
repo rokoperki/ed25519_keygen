@@ -1,8 +1,13 @@
 use crate::hmac_sha512;
 
+#[derive(Clone)]
 pub struct ExtendedKey {
     key: [u8; 32],
     chain_code: [u8; 32],
+}
+
+impl ExtendedKey {
+    pub fn key(&self) -> [u8; 32] { self.key }
 }
 
 impl ExtendedKey {
