@@ -1,4 +1,3 @@
-// What you need to implement:
 #[derive(Debug)]
 pub struct Entropy {
     pub bytes: Vec<u8>,
